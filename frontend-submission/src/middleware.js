@@ -1,4 +1,4 @@
-export default function Logs(stack, level, pkg, message) {
+export default async function Logs(stack, level, pkg, message) {
   const logsData = {
     stack: stack,
     level: level,
@@ -6,7 +6,11 @@ export default function Logs(stack, level, pkg, message) {
     message: message,
   };
 
-  sendLogToAPI(logsData);
+  try {
+    await sendLogToAPI(logsData);
+  } catch (error) {
+    console.error("Failed to send log (outer)", error);
+  }
 }
 
 async function sendLogToAPI(logsData) {
@@ -25,9 +29,11 @@ async function sendLogToAPI(logsData) {
     );
 
     if (response.ok) {
-      console.log("Log sent succesfully");
+      console.log("Log sent successfully");
+    } else {
+      console.error("Log API responded with status:", response.status);
     }
   } catch (error) {
-    console.error("Failed to send log", error);
+    console.error("Failed to send log (inner)", error);
   }
 }
