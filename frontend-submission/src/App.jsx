@@ -8,6 +8,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [shortUrl, setShortUrl] = useState("");
   const [error, setError] = useState("");
+  const [urlMap, setUrlMap] = useState({});
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -15,7 +16,9 @@ function App() {
     const validRegex = /^[0-9]+$/;
     const urlRegex = /https?:\/\/(www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(\/\S*)?/;
 
-    if (!validRegex.test(valid)) {
+    let validityValue = valid === "" ? "30" : valid;
+
+    if (!validRegex.test(validityValue)) {
       Logs("frontend", "error", "api", "Invalid Validity Format");
       setError("Invalid Validity Format");
       return;
@@ -28,14 +31,14 @@ function App() {
     }
 
     setLoading(true);
-    // Simulate URL shortening
     try {
-      // Replace this with actual API call if available
       const fakeShortUrl = `https://short.url/${Math.random()
         .toString(36)
         .substr(2, 6)}`;
       setTimeout(() => {
         setShortUrl(fakeShortUrl);
+        setUrlMap((prev) => ({ ...prev, [fakeShortUrl]: url }));
+        setValid(validityValue);
         setLoading(false);
       }, 1000);
     } catch {
@@ -44,10 +47,16 @@ function App() {
     }
   }
 
+  function handleShortUrlClick(e) {
+    e.preventDefault();
+    if (urlMap[shortUrl]) {
+      window.open(urlMap[shortUrl], "_blank");
+    }
+  }
+
   return (
     <>
       <header id="header">URL Shortener</header>
-      <a href="./statistics.jsx">Click here to see the statstics Page</a>
       <div id="container">
         <p>Enter the URL to shorten it</p>
         <form id="form" onSubmit={handleSubmit}>
@@ -64,7 +73,7 @@ function App() {
             id="time"
             value={valid}
             onChange={(e) => setValid(e.target.value)}
-            placeholder="Validity in days"
+            placeholder="Validity in days. Default 30 days."
           />
           <button id="submit" type="submit">
             Click to Get ShortURL
@@ -76,7 +85,12 @@ function App() {
           <div id="result">
             <p>
               Your New Short URL:{" "}
-              <a href={shortUrl} target="_blank" rel="noopener noreferrer">
+              <a
+                href={shortUrl}
+                onClick={handleShortUrlClick}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 {shortUrl}
               </a>
             </p>
