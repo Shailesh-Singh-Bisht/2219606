@@ -3,7 +3,7 @@ import Logs from "./middleware";
 import "./App.css";
 
 function App() {
-  const [valid, setValid] = useState(0);
+  const [valid, setValid] = useState();
   const [url, setURL] = useState("");
   const [loading, setLoading] = useState(false);
   const [shortUrl, setShortUrl] = useState("");
@@ -73,7 +73,7 @@ function App() {
             id="time"
             value={valid}
             onChange={(e) => setValid(e.target.value)}
-            placeholder="Validity in days. Default 30 days."
+            placeholder="Validity in days. Default 30 minutes."
           />
           <button id="submit" type="submit">
             Click to Get ShortURL
