@@ -1,8 +1,8 @@
-function Logs(stack, level, package, message) {
+export default function Logs(stack, level, pkg, message) {
   const logsData = {
     stack: stack,
     level: level,
-    package: package,
+    pkg: pkg,
     message: message,
   };
 

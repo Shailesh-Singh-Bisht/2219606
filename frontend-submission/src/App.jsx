@@ -1,35 +1,91 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
+import Logs from "./middleware";
+import "./App.css";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [valid, setValid] = useState(0);
+  const [url, setURL] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [shortUrl, setShortUrl] = useState("");
+  const [error, setError] = useState("");
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setError("");
+    const validRegex = /^[0-9]+$/;
+    const urlRegex = /https?:\/\/(www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(\/\S*)?/;
+
+    if (!validRegex.test(valid)) {
+      Logs("frontend", "error", "api", "Invalid Validity Format");
+      setError("Invalid Validity Format");
+      return;
+    }
+
+    if (!urlRegex.test(url)) {
+      Logs("frontend", "error", "api", "Invalid URL");
+      setError("Invalid URL");
+      return;
+    }
+
+    setLoading(true);
+    // Simulate URL shortening
+    try {
+      // Replace this with actual API call if available
+      const fakeShortUrl = `https://short.url/${Math.random()
+        .toString(36)
+        .substr(2, 6)}`;
+      setTimeout(() => {
+        setShortUrl(fakeShortUrl);
+        setLoading(false);
+      }, 1000);
+    } catch {
+      setError("Failed to shorten URL");
+      setLoading(false);
+    }
+  }
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+      <header id="header">URL Shortener</header>
+      <a href="./statistics.jsx">Click here to see the statstics Page</a>
+      <div id="container">
+        <p>Enter the URL to shorten it</p>
+        <form id="form" onSubmit={handleSubmit}>
+          <input
+            type="text"
+            id="url"
+            value={url}
+            onChange={(e) => setURL(e.target.value)}
+            placeholder="Enter URL"
+          />
+          <label htmlFor="time">Enter a validity time period</label>
+          <input
+            type="text"
+            id="time"
+            value={valid}
+            onChange={(e) => setValid(e.target.value)}
+            placeholder="Validity in days"
+          />
+          <button id="submit" type="submit">
+            Click to Get ShortURL
+          </button>
+        </form>
+        {error && <p id="error">{error}</p>}
+        {loading && <div id="loading">Loading...</div>}
+        {shortUrl && !loading && (
+          <div id="result">
+            <p>
+              Your New Short URL:{" "}
+              <a href={shortUrl} target="_blank" rel="noopener noreferrer">
+                {shortUrl}
+              </a>
+            </p>
+            <p>Valid till: {valid} days</p>
+          </div>
+        )}
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
